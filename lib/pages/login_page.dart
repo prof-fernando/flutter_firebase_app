@@ -1,4 +1,6 @@
 import 'package:firebase_app/core/auth_service.dart';
+import 'package:firebase_app/pages/home_page.dart';
+import 'package:firebase_app/pages/nova_conta_page.dart';
 
 import 'package:flutter/material.dart';
 
@@ -39,13 +41,53 @@ class _LoginPageState extends State<LoginPage> {
               height: 20,
             ),
             ElevatedButton(
-              onPressed: () {
-                authService.login(
+              onPressed: () async {
+                final usuario = await authService.login(
                   _emailController.text,
                   _senhaController.text,
                 );
+                if (usuario == null) {
+                  // usuario ou senha invalidos
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Usuário ou senha inválidos'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                } else {
+                  if (!context.mounted) return;
+                  // vai para tela de home
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HomePage(),
+                    ),
+                  );
+                }
               },
               child: const Text('login'),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NovaConta(),
+                    )).then((value) {
+                  // _emailController.text = value['email'];
+                  // _senhaController.text = value['senha'];
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Conta criada com sucesso!'),
+                    ),
+                  );
+                });
+              },
+              child: Text('Nãso possui uma? Então cadastre-se.'),
             )
           ],
         ),
